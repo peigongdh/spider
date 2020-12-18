@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head><title>KEGG Mapper Reconstruction Result</title>
+    <meta name="http-equiv" content="Content-Type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+    <link rel="stylesheet" type="text/css"
+          href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="/css/mapper2.css">
+    <script language="JavaScript">
+        <!--
+        -
+            function display(id) {
+                var no = "object" + id;
+                var status = document.getElementById(no).style.display;
+                if (status == '' || status == 'none') {
+                    document.getElementById(no).style.display = 'inline';
+                } else {
+                    document.getElementById(no).style.display = 'none';
+                }
+            }
+
+        function display_all(status) {
+            var divtag = document.getElementsByTagName('div');
+            var parents = 'object';
+            matchObj = new RegExp(parents);
+            for (i = 0; i < divtag.length; i++) {
+                if (divtag[i].id.match(matchObj)) {
+                    divtag[i].style.display = status;
+                }
+            }
+            if (status == 'inline') {
+                document.getElementById('all_status').innerHTML = "<a href=javascript:display_all('none')>Hide matched objects</a>";
+            } else {
+                document.getElementById('all_status').innerHTML = "<a href=javascript:display_all('inline')>Show matched objects</a>";
+            }
+        }
+
+        function sort_list(sort_type) {
+            document.form1.sort.value = sort_type;
+            document.form1.submit();
+        }
+
+        function submit_mapper(prog, num) {
+            if (num == 0 || num == undefined) {
+                return;
+            }
+            document.form2.action = prog;
+            document.form2.submit();
+        }
+
+        //--->
+    </script>
+</head>
+<body>
+<h3>KEGG Mapper Reconstruction Result</h3>
+<div class="box1">
+    <ul class="menu">
+        <form method="POST" name="form2">
+            <li class="on"><a href="#">Pathway (0)</a></li>
+            <li class="off"><a href="javascript:submit_mapper('find_brite_object',0)">Brite (0)</a></li>
+            <li class="off"><a href="javascript:submit_mapper('find_britetable_object',0)">Brite Table (0)</a></li>
+            <li class="off"><a href="javascript:submit_mapper('find_module_object',0)">Module (0)</a></li>
+            <input type="hidden" name="uploadfile" value="160828942291838/mapper.args">
+            <input type="hidden" name="module_complete_file" value="160828942291838/module_complete.list">
+            <input type="hidden" name="target" value="">
+            <input type="hidden" name="pathway_count" value="0">
+            <input type="hidden" name="brite_count" value="0">
+            <input type="hidden" name="brite_table_count" value="0">
+            <input type="hidden" name="module_count" value="0">
+            <input type="hidden" name="pathway_module_count" value="0">
+        </form>
+    </ul>
+</div>
+<div class="box2">
+    <form method="POST" name="form1" action="/kegg-bin/find_pathway_object">
+        <input type="hidden" name="uploadfile" value="160828942291838/mapper.args">
+        <input type="hidden" name="module_complete_file" value="160828942291838/module_complete.list">
+        <input type="hidden" name="sort" value="object">
+        <input type="hidden" name="target" value="">
+        <input type="hidden" name="pathway_count" value="0">
+        <input type="hidden" name="brite_count" value="0">
+        <input type="hidden" name="brite_table_count" value="0">
+        <input type="hidden" name="module_count" value="0">
+        <input type="hidden" name="pathway_module_count" value="0">
+    </form>
+    <p>
+    <div id="all_status"><a href="javascript:display_all('inline')">Show matched objects</a></div>
+    <p/>
+    <div id=list>
+    </div>
+</div>
+</body>
+</html>
