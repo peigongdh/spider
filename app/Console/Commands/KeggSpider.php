@@ -23,7 +23,9 @@ class KeggSpider extends Command
 
     protected $keggApi = "https://www.kegg.jp/kegg-bin/find_pathway_object";
 
-    protected $filePath = "kegg";
+    protected $fileInput = "kegg-in";
+
+    protected $fileOutput = "kegg-out";
 
     /**
      * Create a new command instance.
@@ -69,8 +71,12 @@ class KeggSpider extends Command
 //        return 0;
 
 
-        $fileName = "R10-11_KO.html";
+        $fileName = "R10-11_KO.txt";
         $response = $this->getByCurl($fileName);
+        $fileOutputPath = $this->fileOutput . "/" . $fileName;
+        file_put_contents($fileOutputPath, $response);
+        echo strlen($response);
+        echo "\n";
         $id = $this->getUploadFileId($response);
         echo $id;
 
@@ -81,7 +87,7 @@ class KeggSpider extends Command
 
     public function getByCurl($fileName)
     {
-        $filePath = $this->filePath . "/" . $fileName;
+        $filePath = $this->fileInput . "/" . $fileName;
         $fileStr = file_get_contents($filePath);
 
         $curl = curl_init();
@@ -89,23 +95,42 @@ class KeggSpider extends Command
         $boundary = uniqid();
         $delimiter = '-------------' . $boundary;
 
-        $postData = $this->buildDataFiles($boundary, [], [$filePath => $fileStr]);
+        $postData = $this->buildDataFiles($boundary, [], [$fileName => $fileStr]);
 
 
         curl_setopt_array($curl, array(
             CURLOPT_URL => $this->keggApi,
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 120,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_TIMEOUT => 300,
+//            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => "POST",
             CURLOPT_POST => 1,
             CURLOPT_POSTFIELDS => $postData,
             CURLOPT_HTTPHEADER => array(
                 //"Authorization: Bearer $TOKEN",
                 "Content-Type: multipart/form-data; boundary=" . $delimiter,
-                "Content-Length: " . strlen($postData)
-
+                "Content-Length: " . strlen($postData),
+                // copy from curl
+                'Host: www.kegg.jp',
+                'Connection: keep-alive',
+                // 'Content-Length: 3607932',
+                'Cache-Control: max-age=0',
+                'sec-ch-ua: "Google Chrome";v="87", " Not;A Brand";v="99", "Chromium";v="87"',
+                'sec-ch-ua-mobile: ?0',
+                'Origin: https://www.kegg.jp',
+                'Upgrade-Insecure-Requests: 1',
+                'DNT: 1',
+                // 'Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryQ9icRMqU9iSBtMqE',
+                'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36',
+                'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+                'Sec-Fetch-Site: same-origin',
+                'Sec-Fetch-Mode: navigate',
+                'Sec-Fetch-User: ?1',
+                'Sec-Fetch-Dest: document',
+                'Referer: https://www.kegg.jp/kegg/tool/map_pathway.html',
+                'Accept-Encoding: gzip, deflate, br',
+                'Accept-Language: zh-CN,zh;q=0.9,en;q=0.8',
             ),
         ));
         $response = curl_exec($curl);
